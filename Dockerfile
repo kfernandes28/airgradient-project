@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY read_airgradient_docker.py .
 
-CMD ["python", "read_airgradient_docker.py"]
+CMD ["python", "-u", "read_airgradient_docker.py"]

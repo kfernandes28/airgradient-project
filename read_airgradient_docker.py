@@ -8,7 +8,7 @@ import os
 url = "http://192.168.0.140/measures/current"
 
 
-for i in range(8):
+while True:
     # get + store one reading
     response =requests.get(url)
 
