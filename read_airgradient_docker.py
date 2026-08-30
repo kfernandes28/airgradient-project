@@ -71,8 +71,10 @@ for i in range(8):
         )
     )
 
-    connection.commit()
+    connection.commit() #make it permanent
     cursor.close()
     connection.close()
+
+    #we currently open a PostgreSQL connection, insert one reading, commit, then close the connection inside every loop iteration,
 
     time.sleep(120)
