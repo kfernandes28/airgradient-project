@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - airgradient-postgres-data:/var/lib/postgresql
+    networks:
+      - airgradient-network
+  collector:
+    build: .
+    env_file:
+      - .env
+    networks:
+      - airgradient-network
+  grafana:
+    image: grafana/grafana
+    networks:
+      - airgradient-network
+    volumes:
+      - airgradient-grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+
+#By setting name:, we’re saying use this exact Docker volume name.
+volumes: 
+  airgradient-postgres-data:
+    name: airgradient-postgres-data
+
+  airgradient-grafana-data:
+    name: airgradient-grafana-data
+
+networks:
+  airgradient-network:
