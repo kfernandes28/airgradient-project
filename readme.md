@@ -19,6 +19,7 @@ The result is a small self-hosted monitoring stack that:
 
 ## Architecture
 
+```text
 AirGradient sensor
         ↓
 Python collector
@@ -26,6 +27,7 @@ Python collector
 PostgreSQL
         ↓
 Grafana
+```
 
 The Python collector requests the AirGradient `/measures/current` endpoint every two minutes and stores temperature, CO₂, PM2.5, humidity, VOC index and NOx index readings in PostgreSQL. Grafana connects to PostgreSQL over the internal Docker network and is exposed on port 3000 for browser access.
 
@@ -34,8 +36,8 @@ The Python collector requests the AirGradient `/measures/current` endpoint every
 The project was built incrementally:
 
 1. **CSV prototype** – fetched readings from the AirGradient API and stored them locally in CSV.
-2. **PostgreSQL version** – replaced CSV storage with a PostgreSQL database.
-3. **Dockerised collector** – moved the collector and database into Docker containers.
+2. **PostgreSQL version** – replaced CSV storage with a PostgreSQL database running locally on my Mac.
+3. **Dockerised collector** – moved the collector and database into Docker containers on a Windows machine intended to run the monitoring stack more continuously.
 4. **Docker Compose stack** – brought PostgreSQL, the collector and Grafana together into one reproducible stack.
 
 Earlier versions of the collector are kept in the `archive/` directory to show this progression.
@@ -50,6 +52,8 @@ Earlier versions of the collector are kept in the `archive/` directory to show t
 - AirGradient local API
 
 ## What I learned
+
+What started as a simple attempt to store my own air-quality data ended up taking me down a much broader learning path through networking, APIs, databases, Docker and observability.
 
 This project gave me practical experience with:
 
