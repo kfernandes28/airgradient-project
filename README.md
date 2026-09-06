@@ -31,6 +31,12 @@ Grafana
 
 The Python collector requests the AirGradient `/measures/current` endpoint every two minutes and stores temperature, CO₂, PM2.5, humidity, VOC index and NOx index readings in PostgreSQL. Grafana connects to PostgreSQL over the internal Docker network and is exposed on port 3000 for browser access.
 
+## Dashboard
+
+The Grafana dashboard provides a real-time view of the environmental data collected from the AirGradient monitor, including temperature, CO₂, PM2.5, humidity, VOC and NOx measurements.
+
+![AirGradient Grafana Dashboard](docs/screenshots/dashboard-overview.png)
+
 ## Project evolution
 
 The project was built incrementally:
