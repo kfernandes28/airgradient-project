@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:18
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -11,12 +12,14 @@ services:
       - airgradient-network
   collector:
     build: .
+    restart: unless-stopped
     env_file:
       - .env
     networks:
       - airgradient-network
   grafana:
     image: grafana/grafana
+    restart: unless-stopped
     networks:
       - airgradient-network
     volumes:
