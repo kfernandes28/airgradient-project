@@ -17,6 +17,15 @@ services:
       - .env
     networks:
       - airgradient-network
+  openmeteo:
+    build:
+      context: .
+      dockerfile: Dockerfile.openmeteo
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - airgradient-network
   grafana:
     image: grafana/grafana
     restart: unless-stopped
