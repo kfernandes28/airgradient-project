@@ -1,5 +1,5 @@
 import requests 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import math
 import psycopg
@@ -34,7 +34,7 @@ while True:
     humidity = data["rhum"]
     voc = data["tvocIndex"]
     nox = data["noxIndex"]
-    timestamp = datetime.now().isoformat()
+    timestamp = datetime.now(timezone.utc).isoformat()
 
     dew_point = calculate_dew_point(temperature, humidity)
 
