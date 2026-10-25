@@ -22,76 +22,80 @@ def calculate_dew_point(temperature_c, humidity_pct):
 
 while True:
     # get + store one reading
-    response =requests.get(url)
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
 
-    data = response.json()
+        #print (data)
 
-    #print (data)
+        temperature = data["atmp"]
+        co2 = data["rco2"]
+        pm25 = data["pm02"]
+        humidity = data["rhum"]
+        voc = data["tvocIndex"]
+        nox = data["noxIndex"]
+        timestamp = datetime.now(timezone.utc).isoformat()
 
-    temperature = data["atmp"]
-    co2 = data["rco2"]
-    pm25 = data["pm02"]
-    humidity = data["rhum"]
-    voc = data["tvocIndex"]
-    nox = data["noxIndex"]
-    timestamp = datetime.now(timezone.utc).isoformat()
+        dew_point = calculate_dew_point(temperature, humidity)
 
-    dew_point = calculate_dew_point(temperature, humidity)
+        reading = {
+            "timestamp": timestamp,
+            "temperature_c": temperature,
+            "co2_ppm": co2,
+            "pm25_ugm3": pm25,
+            "humidity_pct": humidity,
+            "dew_point_c": dew_point,
+            "voc_index": voc,
+            "nox_index": nox,
+        }
 
-    reading = {
-        "timestamp": timestamp,
-        "temperature_c": temperature,
-        "co2_ppm": co2,
-        "pm25_ugm3": pm25,
-        "humidity_pct": humidity,
-        "dew_point_c": dew_point,
-        "voc_index": voc,
-        "nox_index": nox,
-    }
+        print (reading)
 
-    print (reading)
-
-    connection = psycopg.connect(
-        host=os.environ["POSTGRES_HOST"],
-        port=os.environ["POSTGRES_PORT"],
-        dbname=os.environ["POSTGRES_DB"],
-        user=os.environ["POSTGRES_USER"],
-        password=os.environ["POSTGRES_PASSWORD"]
-    )
-
-    cursor = connection.cursor()
-
-
-    cursor.execute(
-        """
-        INSERT INTO airgradient_readings (
-            timestamp,
-            temperature_c,
-            co2_ppm,
-            pm25_ugm3,
-            humidity_pct,
-            dew_point_c,
-            voc_index,
-            nox_index
+        connection = psycopg.connect(
+            host=os.environ["POSTGRES_HOST"],
+            port=os.environ["POSTGRES_PORT"],
+            dbname=os.environ["POSTGRES_DB"],
+            user=os.environ["POSTGRES_USER"],
+            password=os.environ["POSTGRES_PASSWORD"]
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """,
-        (
-            reading["timestamp"],
-            reading["temperature_c"],
-            reading["co2_ppm"],
-            reading["pm25_ugm3"],
-            reading["humidity_pct"],
-            reading["dew_point_c"],
-            reading["voc_index"],
-            reading["nox_index"],
+
+        cursor = connection.cursor()
+
+
+        cursor.execute(
+            """
+            INSERT INTO airgradient_readings (
+                timestamp,
+                temperature_c,
+                co2_ppm,
+                pm25_ugm3,
+                humidity_pct,
+                dew_point_c,
+                voc_index,
+                nox_index
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """,
+            (
+                reading["timestamp"],
+                reading["temperature_c"],
+                reading["co2_ppm"],
+                reading["pm25_ugm3"],
+                reading["humidity_pct"],
+                reading["dew_point_c"],
+                reading["voc_index"],
+                reading["nox_index"],
+            )
         )
-    )
 
-    connection.commit() #make it permanent
-    cursor.close()
-    connection.close()
+        connection.commit() #make it permanent
+        cursor.close()
+        connection.close()
 
-    #we currently open a PostgreSQL connection, insert one reading, commit, then close the connection inside every loop iteration,
+        #we currently open a PostgreSQL connection, insert one reading, commit, then close the connection inside every loop iteration,
+
+    except requests.exceptions.RequestException as e:
+        print(f"AirGradient connection failed: {e}")
 
     time.sleep(120)
